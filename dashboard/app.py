@@ -219,7 +219,7 @@ st.sidebar.caption("Explainable Movie Recommendations")
 st.sidebar.divider()
 page = st.sidebar.radio(
     "Navigate",
-    ["Recommendations", "Taste Profile", "Similar Movies", "Experiments", "Sentiment"],
+    ["Recommendations", "Taste Profile", "Similar Movies", "Sentiment"],
     label_visibility="collapsed",
 )
 
@@ -432,66 +432,7 @@ elif page == "Similar Movies":
                     render_card(i + 1, rec)
 
 
-# ═════════════════════════════════════════════════════════════════════════
-# PAGE: Experiments (MLflow)
-# ═════════════════════════════════════════════════════════════════════════
-elif page == "Experiments":
-    st.title("Experiment Tracking")
-    st.caption("MLflow-logged metrics from collaborative filtering training runs")
-    st.divider()
 
-    try:
-        import mlflow
-
-        base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-        mlruns_path = os.path.join(base_dir, "mlruns")
-        mlflow.set_tracking_uri(f"file://{mlruns_path}")
-        experiment = mlflow.get_experiment_by_name("CineIQ_Collaborative_Filtering")
-
-        if experiment:
-            runs = mlflow.search_runs(experiment_ids=[experiment.experiment_id])
-            if not runs.empty:
-                st.success(f"{len(runs)} training run(s) recorded")
-
-                cols_to_show = ['run_id', 'status',
-                                'params.n_factors', 'params.n_epochs',
-                                'metrics.rmse', 'metrics.precision_at_5', 'metrics.recall_at_5']
-                existing = [c for c in cols_to_show if c in runs.columns]
-                st.dataframe(runs[existing], use_container_width=True)
-
-                st.divider()
-                c1, c2 = st.columns(2)
-
-                with c1:
-                    if 'metrics.rmse' in runs.columns:
-                        st.markdown("#### RMSE by Run")
-                        r_sorted = runs.sort_values("metrics.rmse")
-                        r_sorted["run"] = r_sorted["run_id"].str[:8]
-                        fig = px.bar(r_sorted, x="run", y="metrics.rmse",
-                                     color="metrics.rmse",
-                                     color_continuous_scale=["#3fb950", "#f85149"])
-                        _layout(fig, height=300)
-                        st.plotly_chart(fig, use_container_width=True)
-
-                with c2:
-                    if 'metrics.precision_at_5' in runs.columns:
-                        st.markdown("#### Precision@5 by Run")
-                        r_sorted = runs.sort_values("metrics.precision_at_5", ascending=False)
-                        r_sorted["run"] = r_sorted["run_id"].str[:8]
-                        fig = px.bar(r_sorted, x="run", y="metrics.precision_at_5",
-                                     color="metrics.precision_at_5",
-                                     color_continuous_scale=["#161b22", "#3fb950"])
-                        _layout(fig, height=300)
-                        st.plotly_chart(fig, use_container_width=True)
-            else:
-                st.info("No training runs found. Train the SVD model first using run.sh.")
-        else:
-            st.warning("Experiment 'CineIQ_Collaborative_Filtering' not found. Run the training pipeline first.")
-
-    except ImportError:
-        st.warning("MLflow is not installed. Run: pip install mlflow")
-    except Exception as e:
-        st.error(f"MLflow error: {e}")
 
 
 # ═════════════════════════════════════════════════════════════════════════

@@ -18,7 +18,7 @@ python models/train_sentiment.py
 
 echo.
 echo 🧠 Step 3/5: Training SVD model...
-python -c "from models.recommender import HybridRecommender; rec = HybridRecommender(); rec.load_data(); rec.train_collaborative(sample_size=500000)"
+python -c "from models.recommender import HybridRecommender; rec = HybridRecommender(); rec.load_data(); rec.train_collaborative(sample_size=500000); print('Training complete!')"
 
 echo.
 echo 🔍 Step 4/5: Running verification...
