@@ -127,7 +127,7 @@ This script will:
 5. ✅ Start the FastAPI backend at `http://localhost:8000`
 6. ✅ Start the Streamlit Dashboard at `http://localhost:8501`
 
-**On Windows:** Run `run.bat` instead.
+**On Windows:** Run `.\run.bat` instead.
 
 ---
 
